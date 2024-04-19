@@ -27,7 +27,7 @@ importance sampling:
 ``` r
 library(GFBBIS)
 ## basic example code
-out = BBIS(theta,theta_grads,1000)
+out = BBIS(theta,theta_grads,1000,kernel='rbf')
 
 print(out$adj_mean)
 ```

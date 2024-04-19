@@ -1,4 +1,4 @@
-kernel <- function(x1,x2,h) {
+rbf_kernel <- function(x1,x2,h) {
   return( exp(-(1/h**2) * norm((x1-x2),type='2')) )
 }
 
@@ -8,7 +8,7 @@ kernel <- function(x1,x2,h) {
 # s_x2 = px1 column vector of gradient at x2
 # h = shape parameter
 # kernel = kernel function
-kernel_p <- function(x1,x2,s_x1,s_x2,h,kernel) {
+b_rbf_kernel_p <- function(x1,x2,s_x1,s_x2,h,kernel) {
   k = kernel(x1,x2,h)
 
   kp1 = t(s_x1) %*% (k * s_x2)
@@ -16,31 +16,27 @@ kernel_p <- function(x1,x2,s_x1,s_x2,h,kernel) {
   kp3 = t(s_x2) %*% (k * (-2/h) * (x1-x2))
   kp4 = (k * (2/h)) + ((-2/h) * (x1-x2) %*% (k * (2/h)* (x1-x2)))
 
-  # print(kp1)
-  # print(kp2)
-  # print(kp3)
-  # print(kp4)
-
   return(kp1+kp2+kp3+kp4)
 }
 
 
-#' BBIS
+#' BBIS - Gradient Dependent Black Box Importance Sampling
 #'
-#' @param theta nxp matrix of samples points
+#' @param theta nxp matrix of sample points
 #' @param theta_grads nxp matrix of sample point gradients
 #' @param max_num_its integer of max number of optim steps
+#' @param kernel type of kernel to use for importance sampling
 #'
 #' @return list of nx1 weights and 1xp weighted mean
 #' @export
 #'
 #'
-BBIS <- function(theta, theta_grad, max_num_its) {
+BBIS <- function(theta, theta_grad, max_num_its, kernel='rbf') {
   K_p = matrix(data=NA,nrow=nrow(theta),ncol=nrow(theta))
 
   for (ii in 1:nrow(K_p)) {
     for (jj in 1:ncol(K_p)) {
-      K_p[ii,jj] = kernel_p(theta[ii,],theta[jj,],theta_grad[ii,],theta_grad[jj,],1,kernel)
+      if(kernel=='rbf') { K_p[ii,jj] = b_rbf_kernel_p(theta[ii,],theta[jj,],theta_grad[ii,],theta_grad[jj,],1,rbf_kernel) }
     }
   }
 
