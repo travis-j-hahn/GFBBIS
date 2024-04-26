@@ -32,7 +32,7 @@ FGFBBIS <- function(theta, theta_probs, max_num_its, kernel='rbf') {
   K_p = matrix(data=NA,nrow=nrow(theta),ncol=nrow(theta))
 
   dist = as.matrix(dist(theta, method = "euclidean",
-                        diag = TRUE, upper = TRUE))
+                        diag = TRUE, upper = TRUE)**2)
   h = median(dist)
 
   for (ii in 1:nrow(K_p)) {
