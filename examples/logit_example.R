@@ -54,16 +54,15 @@ prob_func <- function(x0) {
   output_matrix = matrix(data=NA, nrow=nrow(x0),ncol=1)
 
   for (ii in 1:nrow(x0)) {
-    output_matrix[ii] = (chain$log_prob(x0[ii,]))**1
+    output_matrix[ii] = exp(chain$log_prob(x0[ii,]))**1
   }
 
   return(output_matrix)
 }
 
-
 # Gradient Free BBIS Example, using surrogate
 iis2 = sample(1:nrow(chain_steps),50)
-theta2 = chain_steps[iis2,]*1
+theta2 = chain_steps[iis2,]
 theta_probs = prob_func(theta2)
 
 out2 = GFBBIS(theta2,theta_probs,1000)
@@ -76,7 +75,7 @@ print(out2$adj_mean)
 # Gradient Free BBIS Example, no surrogate
 iis3 = sample(1:nrow(chain_steps),50)
 theta3 = chain_steps[iis3,]*1
-theta_probs = prob_func(theta2)
+theta_probs = prob_func(theta3)
 
 out3 = FGFBBIS(theta3,theta_probs,1000)
 print(colMeans(chain_steps))

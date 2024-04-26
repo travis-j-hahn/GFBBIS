@@ -1,5 +1,5 @@
 rbf_kernel <- function(x1,x2,h) {
-  return( exp(-(1/h**2) * norm((x1-x2),type='2')) )
+  return( exp(-(1/h) * norm((x1-x2),type='2')) )
 }
 
 # x1 = px1 column vector
@@ -34,9 +34,13 @@ b_rbf_kernel_p <- function(x1,x2,s_x1,s_x2,h,kernel) {
 BBIS <- function(theta, theta_grad, max_num_its, kernel='rbf') {
   K_p = matrix(data=NA,nrow=nrow(theta),ncol=nrow(theta))
 
+  dist = as.matrix(dist(theta, method = "euclidean",
+                        diag = TRUE, upper = TRUE))
+  h = median(dist)
+
   for (ii in 1:nrow(K_p)) {
     for (jj in 1:ncol(K_p)) {
-      if(kernel=='rbf') { K_p[ii,jj] = b_rbf_kernel_p(theta[ii,],theta[jj,],theta_grad[ii,],theta_grad[jj,],1,rbf_kernel) }
+      if(kernel=='rbf') { K_p[ii,jj] = b_rbf_kernel_p(theta[ii,],theta[jj,],theta_grad[ii,],theta_grad[jj,],h,rbf_kernel) }
     }
   }
 

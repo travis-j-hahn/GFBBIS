@@ -1,19 +1,19 @@
 rbf_kernel <- function(x1,x2,h) {
-  return( exp(-(1/h**2) * norm((x1-x2),type='2')) )
+  return( exp(-(1/h) * norm((x1-x2),type='2')) )
 }
 
 
 # x1 and x2 are points
 # px2 is the probability of x2, p(x2)
 # kernel is the rbf kernel function
-f_gf_rbf_kernel_p <- function(x1,x2,px2,h,kernel) {
+f_gf_rbf_kernel_p <- function(x1,x2,px1,px2,h,kernel) {
   k = rbf_kernel(x1,x2,h)
 
   kp1 = sum(k * (2/h) * (x1-x2))
   kp2 = sum(k * (-2/h) * (x1-x2))
   kp3 = (k * (2/h)) + ((-2/h) * (x1-x2) %*% (k * (2/h)* (x1-x2)))
 
-  return((k+kp1+kp2+kp3)/(px2**2))
+  return((k+kp1+kp2+kp3)*(px1*px2))
 }
 
 
@@ -31,9 +31,13 @@ f_gf_rbf_kernel_p <- function(x1,x2,px2,h,kernel) {
 FGFBBIS <- function(theta, theta_probs, max_num_its, kernel='rbf') {
   K_p = matrix(data=NA,nrow=nrow(theta),ncol=nrow(theta))
 
+  dist = as.matrix(dist(theta, method = "euclidean",
+                        diag = TRUE, upper = TRUE))
+  h = median(dist)
+
   for (ii in 1:nrow(K_p)) {
     for (jj in 1:ncol(K_p)) {
-      if(kernel=='rbf') { K_p[ii,jj] = f_gf_rbf_kernel_p(theta[ii,],theta[jj,],theta_probs[jj,],1,rbf_kernel) }
+      if(kernel=='rbf') { K_p[ii,jj] = f_gf_rbf_kernel_p(theta[ii,],theta[jj,],theta_probs[ii,],theta_probs[jj,],h,rbf_kernel) }
     }
   }
 
