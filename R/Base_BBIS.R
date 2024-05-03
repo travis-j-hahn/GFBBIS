@@ -1,5 +1,5 @@
 rbf_kernel <- function(x1,x2,h) {
-  return( exp(-(1/h) * norm((x1-x2),type='2')) )
+  return( exp(-(1/h) * norm((x1-x2),type='2')**2) )
 }
 
 # x1 = px1 column vector
@@ -14,7 +14,7 @@ b_rbf_kernel_p <- function(x1,x2,s_x1,s_x2,h,kernel) {
   kp1 = t(s_x1) %*% (k * s_x2)
   kp2 = t(s_x1) %*% (k * (2/h) * (x1-x2))
   kp3 = t(s_x2) %*% (k * (-2/h) * (x1-x2))
-  kp4 = (k * (2/h)) + ((-2/h) * (x1-x2) %*% (k * (2/h)* (x1-x2)))
+  kp4 = ((2*exp(-(x1-x2)**2)/h)%*%(h-2*(x1-x2)**2))/h**2
 
   return(kp1+kp2+kp3+kp4)
 }

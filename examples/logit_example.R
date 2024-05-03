@@ -50,34 +50,43 @@ print(out$adj_mean)
 
 
 
-prob_func <- function(x0) {
-  output_matrix = matrix(data=NA, nrow=nrow(x0),ncol=1)
 
-  for (ii in 1:nrow(x0)) {
-    output_matrix[ii] = exp(chain$log_prob(x0[ii,]))**1
+
+
+mvtnorm_prob <- function(theta,mu,sigma) {
+  probs = matrix(data=NA,nrow=nrow(theta),ncol=1)
+  grad_probs = matrix(data=NA,nrow=nrow(theta),ncol=ncol(theta))
+
+
+  for (ii in 1:nrow(theta)) {
+    probs[ii] = ((2*pi)**(-ncol(theta)/2)) * (det(sigma)**(-1/2)) * exp((-1/2)*(t(theta[ii,]-mu)%*%solve(sigma)%*%(theta[ii,]-mu)))
+
+    grad_probs[ii,] = -solve(sigma)%*%(theta[ii,]-mu)
   }
 
-  return(output_matrix)
+  return(list(den=(probs),grad_x=grad_probs))
 }
 
 # Gradient Free BBIS Example, using surrogate
 iis2 = sample(1:nrow(chain_steps),50)
 theta2 = chain_steps[iis2,]
-theta_probs = prob_func(theta2)
+theta_probs= mvtnorm_prob(theta2, mu=colMeans(chain_steps),sigma=var(chain_steps))
 
-out2 = GFBBIS(theta2,theta_probs,1000)
+out2 = GFBBIS(theta2,theta_probs$den,1000)
 print(colMeans(chain_steps))
 print(colMeans(theta2))
 print(out2$adj_mean)
 
 
 
+
+
 # Gradient Free BBIS Example, no surrogate
 iis3 = sample(1:nrow(chain_steps),50)
 theta3 = chain_steps[iis3,]*1
-theta_probs = prob_func(theta3)
+theta_probs = mvtnorm_prob(theta3,mu=colMeans(chain_steps),sigma=var(chain_steps))
 
-out3 = FGFBBIS(theta3,theta_probs,1000)
+out3 = FGFBBIS(theta3,theta_probs$den,1000)
 print(colMeans(chain_steps))
 print(colMeans(theta3))
 print(out3$adj_mean)
