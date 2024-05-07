@@ -13,7 +13,7 @@ f_gf_rbf_kernel_p <- function(x1,x2,px1,px2,h,kernel) {
   kp2 = sum(k * (-2/h) * (x1-x2))
   kp3 = ((2*exp(-(x1-x2)**2)/h)%*%(h-2*(x1-x2)**2))/h**2
 
-  return((k+kp1+kp2+kp3)*(px1*px2))
+  return((k+kp1+kp2+kp3)/(px1*px2))
 }
 
 

@@ -49,10 +49,6 @@ out = BBIS(theta,theta_grads,1000)
 print(out$adj_mean)
 
 
-
-
-
-
 mvtnorm_prob <- function(theta,mu,sigma) {
   probs = matrix(data=NA,nrow=nrow(theta),ncol=1)
   grad_probs = matrix(data=NA,nrow=nrow(theta),ncol=ncol(theta))
@@ -90,3 +86,56 @@ out3 = FGFBBIS(theta3,theta_probs$den,1000)
 print(colMeans(chain_steps))
 print(colMeans(theta3))
 print(out3$adj_mean)
+
+
+
+
+
+
+
+
+
+
+
+
+
+MSEs_standard = matrix(data=NA,nrow=500,ncol=1)
+MSEs_base = matrix(data=NA,nrow=500,ncol=1)
+MSEs_gf = matrix(data=NA,nrow=500,ncol=1)
+MSEs_fgf = matrix(data=NA,nrow=500,ncol=1)
+
+for (ii in 1:500) {
+  print(ii)
+
+  iis = sample(1:nrow(chain_steps),50)
+
+  theta = chain_steps[iis,]*1.5
+  theta_grads = grad_func(theta)
+  theta_probs = mvtnorm_prob(theta,mu=colMeans(chain_steps),sigma=var(chain_steps))
+
+  out_base = BBIS(theta,theta_grads,1000)
+  out_gf = GFBBIS(theta,theta_probs$den,1000)
+  out_fgf = FGFBBIS(theta,theta_probs$den,1000)
+
+  MSEs_standard[ii,] = sum((colMeans(theta)-colMeans(chain_steps))**2)
+  MSEs_base[ii,] = sum((out_base$adj_mean-colMeans(chain_steps))**2)
+  MSEs_gf[ii,] = sum((out_gf$adj_mean-colMeans(chain_steps))**2)
+  MSEs_fgf[ii,] = sum((out_fgf$adj_mean-colMeans(chain_steps))**2)
+}
+
+
+plot(1:500,log(MSEs_standard),ylim = c(-7,0),col='black',ylab = 'log MSEs')
+abline(h=mean(log(MSEs_standard)),col='black')
+points(log(MSEs_base),col='blue')
+abline(h=mean(log(MSEs_base)),col='blue')
+points(log(MSEs_gf),col='red')
+abline(h=mean(log(MSEs_gf)),col='red')
+points(log(MSEs_fgf),col='purple')
+abline(h=mean(log(MSEs_fgf)),col='purple')
+legend(1,-5,legend = c('No IS', 'Base IS', 'GF IS', 'FGF IS'), col=c('black','blue','red','purple'),lty=1)
+
+
+
+
+
+

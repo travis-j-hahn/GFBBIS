@@ -84,7 +84,6 @@ GFBBIS <- function(theta, theta_prob, max_num_its, kernel='rbf') {
   }
 
   out = optim(weights,f,control=list(maxit = max_num_its,parscale=c(weights)),lower=0,method = 'L-BFGS-B')
-  # print(out)
   out$par = out$par/sum(out$par)
 
 

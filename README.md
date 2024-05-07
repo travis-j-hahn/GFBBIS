@@ -6,10 +6,9 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-GFBBIS is an implementation of gradient and gradient free (coming) black
-box importance sampling originally from Qiang Liu, & Jason D. Lee.
-(2016). Black-box Importance Sampling.
-<https://arxiv.org/abs/1610.05247>
+GFBBIS is an implementation of gradient and gradient free black box
+importance sampling originally from Qiang Liu, & Jason D. Lee. (2016).
+Black-box Importance Sampling. <https://arxiv.org/abs/1610.05247>
 
 ## Installation
 
@@ -31,5 +30,9 @@ out = BBIS(theta,theta_grads,1000,kernel='rbf')
 
 print(out$adj_mean)
 ```
+
+MSEs of the different forms can be seen here:
+
+<img src="examples/MSE_output" width="562" />
 
 A full example can be found in examples/logit_example.R
