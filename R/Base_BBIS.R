@@ -57,7 +57,7 @@ BBIS <- function(theta, theta_grad, max_num_its, kernel='rbf') {
 
 
   ans = t(out$par) %*% theta
-  new_points = matrix(data=NA,nrow=nrow(theta),ncol=nrow(theta))
+  new_points = matrix(data=NA,nrow=nrow(theta),ncol=ncol(theta))
   
   for (ii in 1:nrow(theta)) { new_points[ii,] = out$par[ii] * theta[ii,] }
   
