@@ -88,7 +88,10 @@ GFBBIS <- function(theta, theta_prob, max_num_its, kernel='rbf') {
 
 
   ans = t(out$par) %*% theta
-
-  return(list(weights = out$par, adj_mean = ans))
+  new_points = matrix(data=NA,nrow=nrow(theta),ncol=nrow(theta))
+  
+  for (ii in 1:nrow(theta)) { new_points[ii] = out$par[ii] * theta[ii,] }
+  
+  return(list(weights = out$par, adj_mean = ans, new_points = new_points))
 }
 
